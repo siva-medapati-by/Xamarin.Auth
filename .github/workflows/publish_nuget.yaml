@@ -26,7 +26,9 @@ jobs:
       #     nuget-version: '5.x'
       - name: Build nuget
         run: |
-          sh ./build.sh --target=clean && sh ./build.sh --target=libs && sh ./build.sh --target=nuget
+          nuget restore Source/Xamarin.Auth-Library.sln
+          msbuild Source/Core/Xamarin.Auth.XamarinAndroid/Xamarin.Auth.XamarinAndroid.csproj /t:pack /p:Configuration=Release
+          # nuget push BlueYonder.Xamarin.Authentication.Liam/bin/Release/BlueYonder.Xamarin.Authentication.Liam.*.nupkg -Source Artifactory
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
