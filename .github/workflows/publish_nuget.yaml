@@ -1,0 +1,50 @@
+name: publishes nuget package to artifactory
+on:
+  workflow_dispatch:
+    inputs:
+      # version_type:
+      #   description: 'Release Type'
+      #   required: true
+      #   default: alpha | beta | release
+      project_name:
+        description: 'Project to Build'
+        required: true
+        default: Auth
+env:
+    JDA_REGISTRY: "https://jdasoftware.jfrog.io/artifactory/api/nuget/nuget-release-local"
+    # VERSION_TYPE: ${{ github.event.inputs.version_type }}
+    PROJECT_NAME: ${{ github.event.inputs.project_name }}
+
+jobs:
+  publish:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v2
+      - uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: '5.x'
+      - name: Build nuget
+        run: |
+          sh ./build.sh --target=clean && sh ./build.sh --target=libs && sh ./build.sh --target=nuget
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Nugets
+          path: '**/*.nupkg'
+      # - name: Update version code
+      #   run: |
+      #     chmod +x .github/scripts/update_version_code.sh
+      #     .github/scripts/update_version_code.sh BlueYonder.Xamarin.Analytics.AppCenter/BlueYonder.Xamarin.Analytics.AppCenter.csproj
+      # - name: Setup nuget registry
+      #   run: |
+      #     nuget setapikey ${{secrets.ARTIFACTORY_AUTH}} -source ${JDA_REGISTRY} 
+      #     nuget sources add -Name Artifactory -source ${JDA_REGISTRY} -User mobility-ci -pass ${{secrets.ARTIFACTORY_PASS}}
+      # - name: Nuget restore
+      #   run: |
+      #     nuget restore MobilePlatform.sln
+      # - name: Publish nuget
+      #   run: |
+      #     chmod +x .github/scripts/build_project.sh
+      #     .github/scripts/build_project.sh $PROJECT_NAME
+
