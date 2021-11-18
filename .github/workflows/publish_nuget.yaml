@@ -17,13 +17,13 @@ env:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: macos-11
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v2
-      - uses: nuget/setup-nuget@v1
-        with:
-          nuget-version: '5.x'
+      # - uses: nuget/setup-nuget@v1
+      #   with:
+      #     nuget-version: '5.x'
       - name: Build nuget
         run: |
           sh ./build.sh --target=clean && sh ./build.sh --target=libs && sh ./build.sh --target=nuget
